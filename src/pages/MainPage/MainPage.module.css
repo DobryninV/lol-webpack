@@ -1,0 +1,12 @@
+.container {
+    width: 100vw;
+    max-height: 100vh;
+    position: relative;
+}
+
+.contant {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2;
+}
