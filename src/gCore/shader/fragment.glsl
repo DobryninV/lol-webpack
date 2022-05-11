@@ -4,8 +4,9 @@ uniform vec4 resolution;
 uniform vec2 u_mouse;
 uniform float u_time;
 uniform float u_animation;
-uniform sampler2D mainPhoto;
+uniform sampler2D t1, t2;
 uniform sampler2D map;
+uniform float progress;
 
 void main() {
 
@@ -17,14 +18,19 @@ void main() {
 
     float textureMap = texture2D(map, vUv).r;
 
-    vec4 color = texture2D(mainPhoto, vec2(vUv.x + distort*textureMap,vUv.y + distortY*textureMap));
-
     vec2 newUv = (vUv - vec2(0.5))*resolution.zw + vec2(0.5);
 
-    vec4 i2 = texture2D(mainPhoto, vec2(newUv.x + distort*textureMap,newUv.y + distortY*textureMap));
+    vec4 i1 = texture2D(t1, vec2(newUv.x + distort*textureMap,newUv.y + distortY*textureMap));
+    vec4 i2 = texture2D(t2, vec2(newUv.x + distort*textureMap,newUv.y + distortY*textureMap));
+
+    float dist = distance(i1,i2)/2.;
+
+
+    float pr = step(dist,progress);
+    vec3 color = vec3(pr);
+
     
-    vec4 i1 = texture2D(mainPhoto, newUv);
+    vec4 final = mix(i1,i2,pr);
 
-    gl_FragColor = i2;
-
+    gl_FragColor = final;
 }

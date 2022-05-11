@@ -1,6 +1,8 @@
 import * as THREE from 'three';
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import gsap from "gsap";
+import * as dat from "dat.gui";
+
 const fragment = require("./shader/fragment.glsl");
 const vertex = require("./shader/vertex.glsl");
 
@@ -27,7 +29,17 @@ export class Sketch {
         this.loader = new THREE.TextureLoader();
         this.imageLoader = new THREE.ImageLoader();
         this.myTexture = this.loader.load( "img/pole.jpg" )
+        this.pole = this.loader.load( "img/pole2.jpg" )
         this.image = this.imageLoader.load( "img/pole.jpg" )
+        this.settings;
+    }
+
+    settingsGUI() {
+        this.settings = {
+            progress: 0,
+        }
+        this.gui = new dat.GUI();
+        this.gui.add(this.settings, "progress", 0, 1, 0.01)
     }
     
 
@@ -69,12 +81,14 @@ export class Sketch {
             
         this.uniforms = {
             u_time: { type: "f", value: 1.0 },
+            progress: { value: 0 },
             u_animation: { type: "f", value: 0.0 },
             u_mouse: { type: "v2", value: new THREE.Vector2() },
             u_resolution: { type: "v2", value: new THREE.Vector2() },
             resolution: { type: "v4", value: this.valRes },
             u_size: {type:"v2",value: imgSize },
-            mainPhoto: {value: this.myTexture},
+            t1: {value: this.myTexture},
+            t2: { value: this.pole },
             map: {value: this.loader.load( "img/popkamap.jpg" ) }
         };
 
@@ -137,10 +151,12 @@ export class Sketch {
 
     render() {
         this.uniforms.u_time.value += 0.05;
+        this.uniforms.progress.value = this.settings.progress;
         this.renderer.render( this.scene, this.camera );
     }
 
     start() {
+        this.settingsGUI()
         this.init()
         this.animate()
     }
