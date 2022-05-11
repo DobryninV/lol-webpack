@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import gsap from "gsap";
 const fragment = require("./shader/fragment.glsl");
-const vertex = require("./shader/vertexParticles.glsl");
+const vertex = require("./shader/vertex.glsl");
 
 let navigation = 'main'
 
@@ -17,12 +17,17 @@ export class Sketch {
         this.uniforms;
         this.camera;
         this.scene;
+        this.material;
+        this.valRes;
+        
+        this.imageAspect = 3456/4608;
+        this.width = window.innerWidth;
+        this.height = window.innerHeight;
         this.renderer = new THREE.WebGLRenderer();
         this.loader = new THREE.TextureLoader();
         this.imageLoader = new THREE.ImageLoader();
-        this.myTexture = this.loader.load( "img/foto.jpg" )
-        this.image = this.imageLoader.load( "img/foto.jpg" )
-        console.log(this)
+        this.myTexture = this.loader.load( "img/pole.jpg" )
+        this.image = this.imageLoader.load( "img/pole.jpg" )
     }
     
 
@@ -37,13 +42,15 @@ export class Sketch {
         document.onmousemove = this.getMouseXY.bind(this);
         this.container = document.getElementById( 'container' );
         
-        this.camera = new THREE.Camera();
-        this.camera.position.z = 1;
+        // this.camera = new THREE.Camera();
+        // this.camera.position.z = 1;
         this.scene = new THREE.Scene();
-        let geometry = new THREE.PlaneBufferGeometry( 2, 2 );
+        const resSize = new THREE.Vector2()
+        const imgSize = new THREE.Vector2(this.image?.width, this.image?.height)
+        let geometry = new THREE.PlaneBufferGeometry( 1, 1 );
 
         // camera
-        var frustumSize = 10;
+        var frustumSize = 1;
         var aspect = window.innerWidth / window.innerHeight;
         this.camera = 
             new THREE.OrthographicCamera( 
@@ -52,33 +59,34 @@ export class Sketch {
                 frustumSize / 2, 
                 frustumSize / - 2, -1000, 1000 
             );
-        this.camera.position.set(0, 0, 150);
-        this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-        this.time = 0;
+        this.camera.position.set(0, 0, 2);
+        // this.controls = new OrbitControls(this.camera, this.renderer.domElement);
 
-        const resSize = new THREE.Vector2()
-        const imgSize = new THREE.Vector2(this.image?.width, this.image?.height)
-        console.log(resSize, imgSize)
+        this.camera.aspect = window.innerWidth / window.innerHeight;
+        
+        this.valRes = new THREE.Vector4();
 
             
         this.uniforms = {
             u_time: { type: "f", value: 1.0 },
             u_animation: { type: "f", value: 0.0 },
             u_mouse: { type: "v2", value: new THREE.Vector2() },
-            u_resolution: { type: "v2", value: resSize },
+            u_resolution: { type: "v2", value: new THREE.Vector2() },
+            resolution: { type: "v4", value: this.valRes },
             u_size: {type:"v2",value: imgSize },
             mainPhoto: {value: this.myTexture},
-            scale: { type: "f", value: 0.4},
             map: {value: this.loader.load( "img/popkamap.jpg" ) }
         };
 
-        const material = new THREE.ShaderMaterial( {
+        this.material = new THREE.ShaderMaterial( {
             uniforms: this.uniforms,
             vertexShader: vertex,
             fragmentShader: fragment
         } );
 
-        const mesh = new THREE.Mesh( geometry, material );
+        
+
+        const mesh = new THREE.Mesh( geometry, this.material );
         this.scene.add( mesh );
         this.renderer.setPixelRatio( window.devicePixelRatio );
         
@@ -86,19 +94,38 @@ export class Sketch {
         this.onWindowResize();
         window.addEventListener( 'resize', this.onWindowResize.bind(this), false );
         
-        document.addEventListener('click',function(){
-            gsap
-                .to(this.uniforms.u_animation, 3, {value:1})
-        })
+        // document.addEventListener('click',function(){
+        //     gsap
+        //         .to(this.uniforms.u_animation, 3, {value:1})
+        // })
     }
 
 
     onWindowResize( event ) {
+        this.width = window.innerWidth;
+        this.height = window.innerHeight;
         this.renderer.setSize( window.innerWidth, window.innerHeight );
         this.uniforms.u_resolution.value.x = this.renderer.domElement.width;
         this.uniforms.u_resolution.value.y = this.renderer.domElement.height;
         this.uniforms.u_mouse.value.x = this.mouse.x;
         this.uniforms.u_mouse.value.y = this.mouse.y;
+
+        let a1, a2;
+        if (this.height/this.width>this.imageAspect) {
+            a1 = (this.width/this.height) * this.imageAspect;
+            a2 = 1;
+        } else {
+            a1 = 1;
+            a2 = (this.height/this.width)/this.imageAspect;;
+        }
+
+        console.log(a1, a2)
+
+        if (this.material.uniforms.resolution) {
+            console.log(this.material.uniforms.resolution, a1, a2)
+            this.uniforms.resolution.value.z = a1;
+            this.uniforms.resolution.value.w = a2;
+        }
     }
 
 
