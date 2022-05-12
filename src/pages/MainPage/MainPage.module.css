@@ -2,6 +2,12 @@
     width: 100vw;
     max-height: 100vh;
     position: relative;
+    background: linear-gradient(
+        180deg,
+        #b9c6d2 0%,
+        #d0dde9 10.45%,
+        #ffffff 41.35%
+    );
 }
 
 .contant {

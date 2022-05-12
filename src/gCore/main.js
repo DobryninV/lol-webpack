@@ -6,12 +6,6 @@ import * as dat from "dat.gui";
 const fragment = require("./shader/fragment.glsl");
 const vertex = require("./shader/vertex.glsl");
 
-let navigation = 'main'
-
-export const chengeImage = (navType) => {
-    navigation = navType;
-}
-
 // имеет смысл сделать класс с методами обновления и пососать
 export class Sketch {
     mouse = {x:0, y:0};
@@ -28,9 +22,12 @@ export class Sketch {
         this.renderer = new THREE.WebGLRenderer();
         this.loader = new THREE.TextureLoader();
         this.imageLoader = new THREE.ImageLoader();
-        this.myTexture = this.loader.load( "img/pole.jpg" )
-        this.pole = this.loader.load( "img/pole2.jpg" )
-        this.image = this.imageLoader.load( "img/pole.jpg" )
+        this.pole = this.loader.load( "img/pole.jpg" );
+        this.pole2 = this.loader.load( "img/pole2.jpg" );
+        this.mountains = this.loader.load( "img/mountains.jpg" );
+        // this.image = this.imageLoader.load( "img/pole.jpg" )
+        this.isAnimate = false;
+        this.curent = 't1';
         this.settings;
     }
 
@@ -54,16 +51,12 @@ export class Sketch {
         document.onmousemove = this.getMouseXY.bind(this);
         this.container = document.getElementById( 'container' );
         
-        // this.camera = new THREE.Camera();
-        // this.camera.position.z = 1;
         this.scene = new THREE.Scene();
-        const resSize = new THREE.Vector2()
         const imgSize = new THREE.Vector2(this.image?.width, this.image?.height)
         let geometry = new THREE.PlaneBufferGeometry( 1, 1 );
 
         // camera
         var frustumSize = 1;
-        var aspect = window.innerWidth / window.innerHeight;
         this.camera = 
             new THREE.OrthographicCamera( 
                 frustumSize / - 2, 
@@ -72,7 +65,6 @@ export class Sketch {
                 frustumSize / - 2, -1000, 1000 
             );
         this.camera.position.set(0, 0, 2);
-        // this.controls = new OrbitControls(this.camera, this.renderer.domElement);
 
         this.camera.aspect = window.innerWidth / window.innerHeight;
         
@@ -86,9 +78,9 @@ export class Sketch {
             u_mouse: { type: "v2", value: new THREE.Vector2() },
             u_resolution: { type: "v2", value: new THREE.Vector2() },
             resolution: { type: "v4", value: this.valRes },
-            u_size: {type:"v2",value: imgSize },
-            t1: {value: this.myTexture},
-            t2: { value: this.pole },
+            u_size: { type:"v2",value: imgSize },
+            t1: { value: this.pole },
+            t2: { value: this.pole2 },
             map: {value: this.loader.load( "img/popkamap.jpg" ) }
         };
 
@@ -133,14 +125,39 @@ export class Sketch {
             a2 = (this.height/this.width)/this.imageAspect;;
         }
 
-        console.log(a1, a2)
-
-        if (this.material.uniforms.resolution) {
-            console.log(this.material.uniforms.resolution, a1, a2)
-            this.uniforms.resolution.value.z = a1;
-            this.uniforms.resolution.value.w = a2;
-        }
+        this.uniforms.resolution.value.z = a1;
+        this.uniforms.resolution.value.w = a2;
     }
+
+    async changeRoute (route) {
+        if (this.isAnimate) {
+            return false;
+        }
+        this.isAnimate = true;
+
+        this.curent = this.curent === 't1' ? 't2' : 't1';
+        const value = this.curent === 't1' ? 0 : 1;
+
+        switch(route) {
+            case "pole2":
+                this.uniforms[this.curent].value = this.pole2
+                break;
+            case "mountains":
+                this.uniforms[this.curent].value = this.mountains
+                break;
+            default:
+                this.uniforms[this.curent].value = this.pole
+        }
+
+        await gsap
+            .to(
+                this.uniforms.progress, 
+                {value, duration: 1.5, ease: "power1.inOut"}
+            )
+        this.isAnimate = false;
+        return true;
+    }
+
 
 
     animate() {
@@ -151,12 +168,12 @@ export class Sketch {
 
     render() {
         this.uniforms.u_time.value += 0.05;
-        this.uniforms.progress.value = this.settings.progress;
+        // this.uniforms.progress.value = this.settings.progress;
         this.renderer.render( this.scene, this.camera );
     }
 
     start() {
-        this.settingsGUI()
+        // this.settingsGUI()
         this.init()
         this.animate()
     }
