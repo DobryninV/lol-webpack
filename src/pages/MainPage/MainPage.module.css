@@ -2,6 +2,7 @@
     width: 100vw;
     max-height: 100vh;
     position: relative;
+    overflow: hidden;
     background: linear-gradient(
         180deg,
         #b9c6d2 0%,
@@ -10,7 +11,7 @@
     );
 }
 
-.contant {
+.content {
     position: absolute;
     top: 0;
     left: 0;

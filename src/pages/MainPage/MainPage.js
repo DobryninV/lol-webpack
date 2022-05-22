@@ -23,16 +23,16 @@ export const MainPage = () => {
     return (
         <div className={styles.container}>
             <div id="container"></div>
-            <div className={styles.contant}>
+            <div className={styles.content}>
                 <div className={styles.navigation}>
                     <button onClick={navigationHandle('pole')}>
-                        POLE
+                        MOZG
                     </button>
                     <button onClick={navigationHandle('pole2')}>
-                        POLE2
+                        LUSIY
                     </button>
                     <button onClick={navigationHandle('mountains')}>
-                        MOUNTAINS
+                        GUS'
                     </button>
                 </div>
                 <div >

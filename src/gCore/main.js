@@ -4,6 +4,9 @@ import gsap from "gsap";
 import * as dat from "dat.gui";
 
 const fragment = require("./shader/fragment.glsl");
+// const fragment = require("./shader/distornFragment.glsl");
+// const fragment = require("./shader/mandelbrot.glsl");
+// const fragment = require("./shader/m.glsl");
 const vertex = require("./shader/vertex.glsl");
 
 // имеет смысл сделать класс с методами обновления и пососать
@@ -22,9 +25,9 @@ export class Sketch {
         this.renderer = new THREE.WebGLRenderer();
         this.loader = new THREE.TextureLoader();
         this.imageLoader = new THREE.ImageLoader();
-        this.pole = this.loader.load( "img/pole.jpg" );
-        this.pole2 = this.loader.load( "img/pole2.jpg" );
-        this.mountains = this.loader.load( "img/mountains.jpg" );
+        this.pole = this.loader.load( "img/roman.jpg" );
+        this.pole2 = this.loader.load( "img/dimas.jpg" );
+        this.mountains = this.loader.load( "img/vovan.jpg" );
         this.isAnimate = false;
         this.curent = 't1';
         this.settings;
@@ -80,6 +83,10 @@ export class Sketch {
             u_size: { type:"v2",value: imgSize },
             t1: { value: this.pole },
             t2: { value: this.pole2 },
+            // offset: {
+            //     type: 'v2',
+            //     value: new THREE.Vector2(1.150, 0.275)
+            //   }
         };
 
         this.material = new THREE.ShaderMaterial( {
