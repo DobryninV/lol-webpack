@@ -25,7 +25,6 @@ export class Sketch {
         this.pole = this.loader.load( "img/pole.jpg" );
         this.pole2 = this.loader.load( "img/pole2.jpg" );
         this.mountains = this.loader.load( "img/mountains.jpg" );
-        // this.image = this.imageLoader.load( "img/pole.jpg" )
         this.isAnimate = false;
         this.curent = 't1';
         this.settings;
@@ -81,7 +80,6 @@ export class Sketch {
             u_size: { type:"v2",value: imgSize },
             t1: { value: this.pole },
             t2: { value: this.pole2 },
-            map: {value: this.loader.load( "img/popkamap.jpg" ) }
         };
 
         this.material = new THREE.ShaderMaterial( {
@@ -99,11 +97,6 @@ export class Sketch {
         this.container.appendChild( this.renderer.domElement );
         this.onWindowResize();
         window.addEventListener( 'resize', this.onWindowResize.bind(this), false );
-        
-        // document.addEventListener('click',function(){
-        //     gsap
-        //         .to(this.uniforms.u_animation, 3, {value:1})
-        // })
     }
 
 
@@ -152,7 +145,7 @@ export class Sketch {
         await gsap
             .to(
                 this.uniforms.progress, 
-                {value, duration: 1.5, ease: "power1.inOut"}
+                {value, duration: 1.3, ease: "power1.inOut"}
             )
         this.isAnimate = false;
         return true;
