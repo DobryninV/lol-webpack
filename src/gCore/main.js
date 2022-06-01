@@ -3,7 +3,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import gsap from "gsap";
 import * as dat from "dat.gui";
 
-const fragment = require("./shader/fragment.glsl");
+const fragment = require("./shader/transitionFragment.glsl");
 // const fragment = require("./shader/distornFragment.glsl");
 // const fragment = require("./shader/mandelbrot.glsl");
 // const fragment = require("./shader/m.glsl");
@@ -12,7 +12,7 @@ const vertex = require("./shader/vertex.glsl");
 // имеет смысл сделать класс с методами обновления и пососать
 export class Sketch {
     mouse = {x:0, y:0};
-    constructor() {
+    constructor(delay = 1.5) {
         this.uniforms;
         this.camera;
         this.scene;
@@ -25,12 +25,13 @@ export class Sketch {
         this.renderer = new THREE.WebGLRenderer();
         this.loader = new THREE.TextureLoader();
         this.imageLoader = new THREE.ImageLoader();
-        this.pole = this.loader.load( "img/roman.jpg" );
-        this.pole2 = this.loader.load( "img/dimas.jpg" );
-        this.mountains = this.loader.load( "img/vovan.jpg" );
+        this.pole = this.loader.load( "img/mountains.jpeg" );
+        this.pole2 = this.loader.load( "img/sea.jpeg" );
+        this.mountains = this.loader.load( "img/tower.jpeg" );
         this.isAnimate = false;
         this.curent = 't1';
         this.settings;
+        this.delay = delay;
     }
 
     settingsGUI() {
@@ -83,10 +84,6 @@ export class Sketch {
             u_size: { type:"v2",value: imgSize },
             t1: { value: this.pole },
             t2: { value: this.pole2 },
-            // offset: {
-            //     type: 'v2',
-            //     value: new THREE.Vector2(1.150, 0.275)
-            //   }
         };
 
         this.material = new THREE.ShaderMaterial( {
@@ -94,8 +91,6 @@ export class Sketch {
             vertexShader: vertex,
             fragmentShader: fragment
         } );
-
-        
 
         const mesh = new THREE.Mesh( geometry, this.material );
         this.scene.add( mesh );
@@ -117,7 +112,7 @@ export class Sketch {
         this.uniforms.u_mouse.value.y = this.mouse.y;
 
         let a1, a2;
-        if (this.height/this.width>this.imageAspect) {
+        if (this.height/this.width > this.imageAspect) {
             a1 = (this.width/this.height) * this.imageAspect;
             a2 = 1;
         } else {
@@ -152,7 +147,7 @@ export class Sketch {
         await gsap
             .to(
                 this.uniforms.progress, 
-                {value, duration: 1.3, ease: "power1.inOut"}
+                {value, duration: this.delay, ease: "power1.inOut"}
             )
         this.isAnimate = false;
         return true;

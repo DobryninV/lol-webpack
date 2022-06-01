@@ -1,0 +1,70 @@
+
+.block {
+    width: 600px;
+    height: 900px;
+    z-index: 4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    position: relative;
+    background: inherit;
+    border-radius: 16px;
+    background-color: #ffffff7a;
+}
+
+.fadeIn {
+    animation: fade-in;
+}
+
+.fadeOut {
+    opacity: 0;
+    animation: fade-out;
+}
+
+.iosFadeIn {
+    animation: ios-fade-in;
+}
+
+.iosFadeOut {
+    width: 0;
+    height: 0;
+    opacity: 0;
+    animation: ios-fade-out;
+}
+
+@keyframes fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+@keyframes fade-out {
+    from { opacity: 1; }
+    to   { opacity: 0; }
+}
+
+@keyframes ios-fade-in {
+    from {
+        width: 0;
+        height: 0;
+        opacity: 0;
+    }
+    to   {
+        width: 600px;
+        height: 900px;
+        opacity: 1;
+    }
+}
+
+@keyframes ios-fade-out {
+    from {
+        width: 600px;
+        height: 900px;
+        opacity: 1;
+    }
+    to   {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+}
